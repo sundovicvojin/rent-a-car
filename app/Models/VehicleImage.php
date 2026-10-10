@@ -47,4 +47,19 @@ class VehicleImage extends Model
             ? Storage::disk('public')->url($variant)
             : Storage::disk('public')->url($this->path);
     }
+
+    /** srcset sa WebP varijantama; prazan string ako varijante ne postoje. */
+    public function srcset(): string
+    {
+        $service = app(ImageService::class);
+        $parts = [];
+        foreach (ImageService::SIZES as $size => $width) {
+            $variant = $service->variantPath($this->path, $size);
+            if (Storage::disk('public')->exists($variant)) {
+                $parts[] = Storage::disk('public')->url($variant).' '.$width.'w';
+            }
+        }
+
+        return implode(', ', $parts);
+    }
 }

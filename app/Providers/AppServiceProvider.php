@@ -24,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
             ->defaultDateTimeDisplayFormat('d.m.Y H:i'));
 
         \Carbon\Carbon::setLocale('sr_Latn');
+
+        \Illuminate\Support\Facades\View::composer(['components.layouts.*', 'emails.*', 'pages.*', 'fleet.*', 'reservation.*'], fn ($view) => $view->with('company', \App\Models\CompanySetting::current()));
         //
     }
 }

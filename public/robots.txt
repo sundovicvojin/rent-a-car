@@ -1,2 +1,6 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /rezervacija/potvrda
+
+# Zameniti pravim domenom pri objavljivanju:
+Sitemap: http://localhost:8000/sitemap.xml

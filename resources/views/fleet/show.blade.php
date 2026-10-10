@@ -99,7 +99,7 @@
                 <h2 id="spec" class="h2">Specifikacije</h2>
                 @if ($vehicle->description)<p class="mt-4 text-ink-2">{{ $vehicle->description }}</p>@endif
             </div>
-            <dl class="grid grid-cols-2 gap-px bg-line sm:grid-cols-3" style="border: 1px solid var(--line); border-radius: 6px; overflow: hidden;">
+            <dl data-reveal class="grid grid-cols-2 gap-px bg-line sm:grid-cols-3" style="border: 1px solid var(--line); border-radius: 6px; overflow: hidden;">
                 @foreach ([
                     ['calendar', 'Godište', $vehicle->year],
                     ['gear', 'Menjač', $vehicle->transmission->getLabel()],
@@ -122,7 +122,7 @@
         <div class="wrap">
             <h2 id="kalendar" class="h2">Kalendar zauzetosti</h2>
             <p class="lead mt-2 mb-6">Pregled narednih meseci. Dan vraćanja ostaje slobodan za novo preuzimanje.</p>
-            <x-availability-calendar :busy="$busy" />
+            <x-availability-calendar data-reveal :busy="$busy" />
         </div>
     </section>
 

@@ -1,5 +1,5 @@
 @props(['vehicle', 'total' => null, 'days' => null, 'query' => []])
-<article class="group card relative flex flex-col overflow-hidden transition-shadow duration-200 hover:shadow-lg" style="border-top-right-radius: 40px;">
+<article data-reveal class="vehicle-card group card relative flex flex-col overflow-hidden hover:shadow-lg" style="border-top-right-radius: 40px;">
     <div class="relative aspect-[16/10] overflow-hidden bg-surface-2">
         <x-vehicle-image :image="$vehicle->primaryImage" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none" />
         <span class="badge badge-signal absolute left-3 top-3">{{ $vehicle->category->name }}</span>

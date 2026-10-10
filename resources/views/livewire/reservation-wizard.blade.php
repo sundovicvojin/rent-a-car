@@ -22,6 +22,8 @@
         <form wire:submit="{{ $step === 5 ? 'submit' : 'next' }}" class="card p-5 sm:p-8" novalidate>
             <h2 id="korak-naslov" tabindex="-1" class="text-2xl font-bold outline-none">{{ $step }}. {{ $steps[$step] }}</h2>
 
+            <div wire:key="step-{{ $step }}" class="step-in">
+
             {{-- Korak 1 --}}
             @if ($step === 1)
                 <div class="mt-6 grid gap-5 sm:grid-cols-2">
@@ -203,6 +205,8 @@
                 <p class="mt-6 flex items-center gap-2 text-sm"><x-ico name="info" class="size-4 shrink-0 text-brand-text" />Plaćanje se vrši pri preuzimanju vozila. Ne unosite podatke o kartici.</p>
                 @error('consent')<p class="error mt-3" role="alert">{{ $message }}</p>@enderror
             @endif
+
+            </div>
 
             <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
                 @if ($step > 1)

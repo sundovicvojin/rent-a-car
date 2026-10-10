@@ -20,6 +20,7 @@
     @isset($ogImage)<meta property="og:image" content="{{ $ogImage }}">@endisset
     <meta name="twitter:card" content="summary_large_image">
     <meta name="theme-color" content="#0e6e8c">
+    <script>if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js-reveal');</script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230E6E8C'/%3E%3Cpath d='M6 20v-4l3-5h14l3 5v4h-3v2h-3v-2H12v2H9v-2Z' fill='%23fff'/%3E%3C/svg%3E">
     <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -31,7 +32,7 @@
 <body>
     <a href="#sadrzaj" class="skip-link">Preskoči na sadržaj</a>
 
-    <header class="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur">
+    <header class="site-header sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur">
         <div class="wrap flex h-16 items-center justify-between gap-4">
             <a href="{{ route('home') }}" class="flex items-center gap-2.5 font-display text-lg font-bold text-ink no-underline">
                 <span class="grid size-9 place-items-center bg-brand text-on-brand" style="border-radius: 6px 14px 6px 6px;"><x-ico name="key" class="size-5" /></span>
@@ -41,7 +42,7 @@
             <nav aria-label="Glavna navigacija" class="hidden items-center gap-1 lg:flex">
                 @foreach ([['home', 'Početna'], ['fleet.index', 'Vozni park'], ['terms', 'Uslovi najma'], ['contact', 'Kontakt']] as [$route, $label])
                     <a href="{{ route($route) }}" @if (request()->routeIs($route) || ($route === 'fleet.index' && request()->routeIs('fleet.*'))) aria-current="page" @endif
-                       class="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-ink no-underline hover:text-brand-text aria-[current=page]:text-brand-text aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-8">{{ $label }}</a>
+                       class="nav-link inline-flex min-h-11 items-center px-3 text-sm font-semibold text-ink no-underline hover:text-brand-text aria-[current=page]:text-brand-text aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-8">{{ $label }}</a>
                 @endforeach
             </nav>
 

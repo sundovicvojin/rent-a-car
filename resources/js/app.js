@@ -28,3 +28,44 @@ document.querySelectorAll('[data-gallery]').forEach((gallery) => {
         });
     });
 });
+
+
+// Zaglavlje: senka posle skrola.
+const header = document.querySelector('.site-header');
+if (header) {
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+}
+
+// Otkrivanje elemenata pri skrolu (IntersectionObserver). Preskače se kod smanjenog kretanja.
+if (document.documentElement.classList.contains('js-reveal') && 'IntersectionObserver' in window) {
+    const items = [...document.querySelectorAll('[data-reveal]')];
+    const siblingsSeen = new Map();
+    items.forEach((el) => {
+        // Stagger: svaki sledeći element istog roditelja kasni 80 ms (najviše 400 ms).
+        const n = siblingsSeen.get(el.parentElement) ?? 0;
+        siblingsSeen.set(el.parentElement, n + 1);
+        el.style.setProperty('--reveal-delay', `${Math.min(n, 5) * 80}ms`);
+    });
+
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                el.classList.add('is-visible');
+                io.unobserve(el);
+                // Posle otkrivanja skidamo reveal tranziciju da ne usporava hover i druge efekte.
+                el.addEventListener('transitionend', function done(e) {
+                    if (e.propertyName === 'opacity') {
+                        el.removeAttribute('data-reveal');
+                        el.style.removeProperty('--reveal-delay');
+                        el.removeEventListener('transitionend', done);
+                    }
+                });
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+    items.forEach((el) => io.observe(el));
+}

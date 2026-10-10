@@ -271,3 +271,80 @@
     .cal-day[data-past='true'] { color: var(--ink-2); opacity: 0.45; }
     .cal-day[data-free='true'] { background: var(--good-soft); color: var(--good); }
 }
+
+
+/* ---------- Animacije ----------
+ * Samo transform i opacity. Sve se gasi kad korisnik traži smanjeno kretanje
+ * (globalno pravilo gore + provera u JS-u). Bez JS-a sadržaj ostaje vidljiv. */
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes clip-in {
+    from { clip-path: inset(0 0 100% 0); transform: scale(1.04); }
+    to { clip-path: inset(0 0 0 0); transform: none; }
+}
+@keyframes slide-down {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes pop-in {
+    from { opacity: 0; transform: scale(0.94) translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Uvodna animacija prvog ekrana (bez JS-a) */
+.hero-in { animation: rise-in 700ms var(--ease) both; animation-delay: var(--d, 0ms); }
+.hero-img { animation: clip-in 900ms var(--ease) both; animation-delay: 150ms; }
+.hero-badge { animation: pop-in 600ms var(--ease) both; animation-delay: 800ms; }
+
+/* Otkrivanje pri skrolu: aktivno samo kad JS označi html.js-reveal */
+.js-reveal [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+.js-reveal [data-reveal].is-visible { opacity: 1; transform: none; }
+
+/* Zaglavlje dobija senku kad se skroluje */
+.site-header { transition: box-shadow 200ms var(--ease), background-color 200ms var(--ease); }
+.site-header.is-scrolled { box-shadow: 0 6px 20px -12px rgb(19 34 43 / 0.35); }
+
+/* Mobilni meni */
+[data-nav-menu]:not(.hidden) { animation: slide-down 220ms var(--ease) both; }
+
+/* Linkovi u navigaciji: linija koja se izvlači */
+.nav-link { background: linear-gradient(currentColor, currentColor) left bottom / 0 2px no-repeat; transition: background-size 220ms var(--ease), color 160ms var(--ease); }
+.nav-link:hover { background-size: 100% 2px; }
+
+/* Dugmad: strelica se pomera, blagi podizanje */
+.btn svg { transition: transform 200ms var(--ease); }
+.btn:hover:not(:disabled) > svg:last-child { transform: translateX(3px); }
+.btn-primary:hover:not(:disabled), .btn-signal:hover:not(:disabled) { transform: translateY(-1px); }
+
+/* Kartice vozila */
+.vehicle-card { transition: transform 260ms var(--ease), box-shadow 260ms var(--ease); }
+.vehicle-card:hover { transform: translateY(-4px); }
+.vehicle-card:focus-within { transform: translateY(-2px); }
+
+/* Ikone u prednostima */
+.feature-icon { transition: transform 260ms var(--ease), background-color 200ms var(--ease); }
+li:hover > .feature-icon { transform: translateY(-2px) rotate(-4deg); }
+
+/* Koraci rezervacije i poruke */
+.step-in { animation: rise-in 380ms var(--ease) both; }
+.error, [role='alert'], [role='status'] { animation: fade-in 250ms var(--ease) both; }
+
+/* Kalendar zauzetosti */
+.cal-day { transition: transform 140ms var(--ease); }
+.cal-day[data-free='true']:hover { transform: scale(1.12); }
+
+/* Galerija */
+[data-gallery-main] { animation: fade-in 350ms var(--ease) both; }
+[data-gallery-thumb] { transition: transform 180ms var(--ease), border-color 160ms var(--ease); }
+[data-gallery-thumb]:hover { transform: translateY(-2px); }

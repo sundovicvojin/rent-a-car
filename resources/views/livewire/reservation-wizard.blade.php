@@ -35,19 +35,66 @@
                         <input class="input num" type="date" id="r-do" wire:model="ends_on" min="{{ $minDate }}" required @error('ends_on') aria-invalid="true" aria-describedby="r-do-err" @enderror>
                         @error('ends_on')<p class="error" id="r-do-err">{{ $message }}</p>@enderror
                     </div>
-                    <div class="field">
+                    <div class="field" @if ($pickup_on_map) hidden @endif>
                         <label class="label" for="r-pick">Lokacija preuzimanja <span class="req" aria-hidden="true">*</span></label>
                         <select class="select" id="r-pick" wire:model="pickup_location_id" @error('pickup_location_id') aria-invalid="true" aria-describedby="r-pick-err" @enderror>
                             @foreach ($this->locations as $l)<option value="{{ $l->id }}">{{ $l->name }}@if ($l->delivery_fee) (+{{ \App\Support\Money::format($l->delivery_fee) }})@endif</option>@endforeach
                         </select>
                         @error('pickup_location_id')<p class="error" id="r-pick-err">{{ $message }}</p>@enderror
                     </div>
-                    <div class="field">
+                    <div class="field" @if ($return_on_map) hidden @endif>
                         <label class="label" for="r-ret">Lokacija vraćanja <span class="req" aria-hidden="true">*</span></label>
                         <select class="select" id="r-ret" wire:model="return_location_id" @error('return_location_id') aria-invalid="true" aria-describedby="r-ret-err" @enderror>
                             @foreach ($this->locations as $l)<option value="{{ $l->id }}">{{ $l->name }}@if ($l->delivery_fee) (+{{ \App\Support\Money::format($l->delivery_fee) }})@endif</option>@endforeach
                         </select>
                         @error('return_location_id')<p class="error" id="r-ret-err">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="check cursor-pointer" for="r-pickup-map">
+                            <input type="checkbox" id="r-pickup-map" wire:model.live="pickup_on_map">
+                            <span class="text-sm font-semibold">Dostavite vozilo na adresu koju izaberem na mapi</span>
+                        </label>
+                        @if ($pickup_on_map)
+                            <div class="mt-3 space-y-3">
+                                <p class="hint" id="r-pickup-map-hint">Kliknite na mapu da označite tačku. Doplata se računa po kilometru od naše poslovnice (<span class="num">{{ \App\Support\Money::format($delivery['fee_per_km']) }}</span> / km, do <span class="num">{{ $delivery['max_km'] }}</span> km).</p>
+                                <div wire:ignore x-data x-init="window.initDeliveryMap($el, $wire, 'pickup')" data-lat="{{ $delivery['lat'] }}" data-lng="{{ $delivery['lng'] }}" data-max-km="{{ $delivery['max_km'] }}" data-point-lat="{{ $pickup_lat }}" data-point-lng="{{ $pickup_lng }}"
+                                     class="h-72 w-full overflow-hidden border border-field bg-surface-2" style="border-radius: 6px;" role="application" aria-label="Mapa za izbor mesta: preuzimanje" aria-describedby="r-pickup-map-hint"></div>
+                                @error('pickup_lat')<p class="error" role="alert">{{ $message }}</p>@enderror
+                                @if ($pickup_lat !== null)
+                                    @php $d = app(\App\Services\DeliveryService::class)->forPoint($pickup_lat, $pickup_lng); @endphp
+                                    <p class="text-sm font-semibold text-good"><x-ico name="check" class="inline size-4" /> Tačka izabrana, <span class="num">{{ $d['km'] }}</span> km od poslovnice, doplata <x-money :cents="$d['fee']" />.</p>
+                                @endif
+                                <div class="field">
+                                    <label class="label" for="r-pickup-addr">Adresa ili opis mesta</label>
+                                    <input class="input" id="r-pickup-addr" type="text" wire:model="pickup_address" maxlength="200" @error('pickup_address') aria-invalid="true" @enderror>
+                                    @error('pickup_address')<p class="error">{{ $message }}</p>@enderror
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="check cursor-pointer" for="r-return-map">
+                            <input type="checkbox" id="r-return-map" wire:model.live="return_on_map">
+                            <span class="text-sm font-semibold">Preuzmite vozilo sa adrese koju izaberem na mapi</span>
+                        </label>
+                        @if ($return_on_map)
+                            <div class="mt-3 space-y-3">
+                                <p class="hint" id="r-return-map-hint">Kliknite na mapu da označite tačku. Doplata se računa po kilometru od naše poslovnice (<span class="num">{{ \App\Support\Money::format($delivery['fee_per_km']) }}</span> / km, do <span class="num">{{ $delivery['max_km'] }}</span> km).</p>
+                                <div wire:ignore x-data x-init="window.initDeliveryMap($el, $wire, 'return')" data-lat="{{ $delivery['lat'] }}" data-lng="{{ $delivery['lng'] }}" data-max-km="{{ $delivery['max_km'] }}" data-point-lat="{{ $return_lat }}" data-point-lng="{{ $return_lng }}"
+                                     class="h-72 w-full overflow-hidden border border-field bg-surface-2" style="border-radius: 6px;" role="application" aria-label="Mapa za izbor mesta: vraćanje" aria-describedby="r-return-map-hint"></div>
+                                @error('return_lat')<p class="error" role="alert">{{ $message }}</p>@enderror
+                                @if ($return_lat !== null)
+                                    @php $d = app(\App\Services\DeliveryService::class)->forPoint($return_lat, $return_lng); @endphp
+                                    <p class="text-sm font-semibold text-good"><x-ico name="check" class="inline size-4" /> Tačka izabrana, <span class="num">{{ $d['km'] }}</span> km od poslovnice, doplata <x-money :cents="$d['fee']" />.</p>
+                                @endif
+                                <div class="field">
+                                    <label class="label" for="r-return-addr">Adresa ili opis mesta</label>
+                                    <input class="input" id="r-return-addr" type="text" wire:model="return_address" maxlength="200" @error('return_address') aria-invalid="true" @enderror>
+                                    @error('return_address')<p class="error">{{ $message }}</p>@enderror
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <p class="hint mt-4">Dani se računaju po datumima: od 14. do 17. su 3 dana. Doplata za dostavu se naplaćuje za svaku lokaciju posebno.</p>
@@ -144,8 +191,8 @@
                 <div class="mt-6 grid gap-6 sm:grid-cols-2">
                     <dl class="space-y-3 text-sm">
                         <div><dt class="text-ink-2">Vozilo</dt><dd class="font-semibold">{{ $this->vehicle->name }}</dd></div>
-                        <div><dt class="text-ink-2">Preuzimanje</dt><dd class="font-semibold"><span class="num">{{ $this->range->start->format('d.m.Y') }}</span>, {{ $this->locations->firstWhere('id', $pickup_location_id)?->name }}</dd></div>
-                        <div><dt class="text-ink-2">Vraćanje</dt><dd class="font-semibold"><span class="num">{{ $this->range->end->format('d.m.Y') }}</span>, {{ $this->locations->firstWhere('id', $return_location_id)?->name }}</dd></div>
+                        <div><dt class="text-ink-2">Preuzimanje</dt><dd class="font-semibold"><span class="num">{{ $this->range->start->format('d.m.Y') }}</span>, {{ $this->quote->pickupCustom ? 'dostava na adresu'.($this->quote->pickupCustom['address'] ? ': '.$this->quote->pickupCustom['address'] : '') : $this->locations->firstWhere('id', $pickup_location_id)?->name }}</dd></div>
+                        <div><dt class="text-ink-2">Vraćanje</dt><dd class="font-semibold"><span class="num">{{ $this->range->end->format('d.m.Y') }}</span>, {{ $this->quote->returnCustom ? 'preuzimanje sa adrese'.($this->quote->returnCustom['address'] ? ': '.$this->quote->returnCustom['address'] : '') : $this->locations->firstWhere('id', $return_location_id)?->name }}</dd></div>
                     </dl>
                     <dl class="space-y-3 text-sm">
                         <div><dt class="text-ink-2">Klijent</dt><dd class="font-semibold">{{ $name }}</dd></div>
@@ -183,8 +230,8 @@
                         <div class="flex justify-between gap-3"><dt class="text-ink-2"><span class="num">{{ $line['days'] }}</span> × <x-money :cents="$line['daily_price']" />@if ($line['label'])<span class="block text-xs">{{ $line['label'] }}</span>@endif</dt><dd><x-money :cents="$line['days'] * $line['daily_price']" /></dd></div>
                     @endforeach
                     @if ($q->discountTotal)<div class="flex justify-between gap-3"><dt class="text-ink-2">Popust za duži najam (<span class="num">{{ $q->discountPercent }}</span>%)</dt><dd class="text-good">−<x-money :cents="$q->discountTotal" /></dd></div>@endif
-                    @if ($q->pickupFee)<div class="flex justify-between gap-3"><dt class="text-ink-2">Dostava, preuzimanje</dt><dd><x-money :cents="$q->pickupFee" /></dd></div>@endif
-                    @if ($q->returnFee)<div class="flex justify-between gap-3"><dt class="text-ink-2">Dostava, vraćanje</dt><dd><x-money :cents="$q->returnFee" /></dd></div>@endif
+                    @if ($q->pickupFee)<div class="flex justify-between gap-3"><dt class="text-ink-2">Dostava, preuzimanje @if ($q->pickupCustom) (<span class="num">{{ $q->pickupCustom['km'] }}</span> km)@endif</dt><dd><x-money :cents="$q->pickupFee" /></dd></div>@endif
+                    @if ($q->returnFee)<div class="flex justify-between gap-3"><dt class="text-ink-2">Dostava, vraćanje @if ($q->returnCustom) (<span class="num">{{ $q->returnCustom['km'] }}</span> km)@endif</dt><dd><x-money :cents="$q->returnFee" /></dd></div>@endif
                     @foreach ($q->extras as $x)<div class="flex justify-between gap-3"><dt class="text-ink-2">{{ $x['name'] }}</dt><dd><x-money :cents="$x['total']" /></dd></div>@endforeach
                     <div class="flex items-baseline justify-between gap-3 border-t border-line pt-3 text-base font-bold"><dt>Ukupno</dt><dd class="text-2xl"><x-money :cents="$q->total()" /></dd></div>
                 </dl>

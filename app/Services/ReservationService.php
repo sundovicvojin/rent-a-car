@@ -29,7 +29,7 @@ class ReservationService
     ) {}
 
     /**
-     * @param  array{vehicle_id:int, starts_on:string, ends_on:string, pickup_location_id:int, return_location_id:int, extra_ids?:array<int,int>, customer:array{name:string,phone:string,email:string}, note?:?string, consent?:bool, status?:ReservationStatus, internal_note?:?string}  $data
+     * @param  array{vehicle_id:int, starts_on:string, ends_on:string, pickup_location_id:int, return_location_id:int, extra_ids?:array<int,int>, pickup_point?:?array, return_point?:?array, customer:array{name:string,phone:string,email:string}, note?:?string, consent?:bool, status?:ReservationStatus, internal_note?:?string}  $data
      *
      * @throws VehicleUnavailableException
      */
@@ -54,7 +54,7 @@ class ReservationService
                 throw new VehicleUnavailableException;
             }
 
-            $quote = $this->pricing->quote($vehicle, $range, $pickup, $return, $data['extra_ids'] ?? []);
+            $quote = $this->pricing->quote($vehicle, $range, $pickup, $return, $data['extra_ids'] ?? [], $data['pickup_point'] ?? null, $data['return_point'] ?? null);
 
             $customer = Customer::query()->firstOrNew(['email' => mb_strtolower(trim($data['customer']['email']))]);
             $customer->fill([
@@ -78,6 +78,8 @@ class ReservationService
                 'total' => $quote->total(),
                 'deposit' => $quote->deposit,
                 'price_breakdown' => $quote->toArray(),
+                'pickup_custom' => $quote->pickupCustom,
+                'return_custom' => $quote->returnCustom,
                 'customer_note' => $data['note'] ?? null,
                 'internal_note' => $data['internal_note'] ?? null,
                 'payment_method' => PaymentMethod::PayOnPickup,

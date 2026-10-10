@@ -8,6 +8,7 @@ use App\Models\Extra;
 use App\Models\Location;
 use App\Models\Vehicle;
 use App\Services\AvailabilityService;
+use App\Services\DeliveryService;
 use App\Services\PriceQuote;
 use App\Services\PricingService;
 use App\Services\ReservationService;
@@ -35,6 +36,22 @@ class ReservationWizard extends Component
     public ?int $pickup_location_id = null;
 
     public ?int $return_location_id = null;
+
+    public bool $pickup_on_map = false;
+
+    public bool $return_on_map = false;
+
+    public ?float $pickup_lat = null;
+
+    public ?float $pickup_lng = null;
+
+    public string $pickup_address = '';
+
+    public ?float $return_lat = null;
+
+    public ?float $return_lng = null;
+
+    public string $return_address = '';
 
     public ?int $vehicle_id = null;
 
@@ -82,7 +99,7 @@ class ReservationWizard extends Component
     {
         $all = (new StoreReservationRequest)->rules();
         $keys = match ($step) {
-            1 => ['starts_on', 'ends_on', 'pickup_location_id', 'return_location_id'],
+            1 => ['starts_on', 'ends_on', 'pickup_location_id', 'return_location_id', 'pickup_on_map', 'return_on_map', 'pickup_lat', 'pickup_lng', 'pickup_address', 'return_lat', 'return_lng', 'return_address'],
             2 => ['vehicle_id'],
             3 => ['extra_ids', 'extra_ids.*'],
             4 => ['name', 'phone', 'email', 'note', 'consent', 'website'],
@@ -130,6 +147,48 @@ class ReservationWizard extends Component
         }
     }
 
+    public function updatedPickupOnMap(): void
+    {
+        $this->pickup_location_id = Location::query()->active()->orderBy('id')->value('id');
+        $this->resetPoint('pickup');
+    }
+
+    public function updatedReturnOnMap(): void
+    {
+        $this->return_location_id = Location::query()->active()->orderBy('id')->value('id');
+        $this->resetPoint('return');
+    }
+
+    private function resetPoint(string $side): void
+    {
+        $this->{$side.'_lat'} = null;
+        $this->{$side.'_lng'} = null;
+        $this->resetErrorBag([$side.'_lat', $side.'_lng']);
+    }
+
+    /** Poziva se klikom na mapu. Doplata se uvek računa na serveru. */
+    public function setPoint(string $side, float $lat, float $lng): void
+    {
+        abort_unless(in_array($side, ['pickup', 'return'], true), 422);
+
+        if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
+            return;
+        }
+
+        $result = app(DeliveryService::class)->forPoint($lat, $lng);
+        if (! $result['within_range']) {
+            $max = \App\Models\CompanySetting::current()->delivery()['max_km'];
+            $this->resetPoint($side);
+            $this->addError($side.'_lat', "Izabrana tačka je predaleko. Dostava je moguća do {$max} km od naše poslovnice.");
+
+            return;
+        }
+
+        $this->{$side.'_lat'} = round($lat, 6);
+        $this->{$side.'_lng'} = round($lng, 6);
+        $this->resetErrorBag([$side.'_lat', $side.'_lng']);
+    }
+
     public function selectVehicle(int $id): void
     {
         $this->vehicle_id = $id;
@@ -156,6 +215,8 @@ class ReservationWizard extends Component
                 'pickup_location_id' => $this->pickup_location_id,
                 'return_location_id' => $this->return_location_id,
                 'extra_ids' => array_map('intval', $this->extra_ids),
+                'pickup_point' => $this->point('pickup'),
+                'return_point' => $this->point('return'),
                 'customer' => ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email],
                 'note' => $this->note ?: null,
                 'consent' => $this->consent,
@@ -169,6 +230,16 @@ class ReservationWizard extends Component
         }
 
         $this->redirect(URL::signedRoute('reservation.confirmation', ['reservation' => $reservation->number]));
+    }
+
+    /** @return array{lat:float,lng:float,address:?string}|null */
+    private function point(string $side): ?array
+    {
+        if (! $this->{$side.'_on_map'} || $this->{$side.'_lat'} === null || $this->{$side.'_lng'} === null) {
+            return null;
+        }
+
+        return ['lat' => $this->{$side.'_lat'}, 'lng' => $this->{$side.'_lng'}, 'address' => trim($this->{$side.'_address'}) ?: null];
     }
 
     #[Computed]
@@ -238,11 +309,17 @@ class ReservationWizard extends Component
             $this->locations->firstWhere('id', $this->pickup_location_id),
             $this->locations->firstWhere('id', $this->return_location_id),
             array_map('intval', $this->extra_ids),
+            $this->point('pickup'),
+            $this->point('return'),
         );
     }
 
     public function render()
     {
-        return view('livewire.reservation-wizard', ['steps' => self::STEPS, 'minDate' => now()->toDateString()]);
+        return view('livewire.reservation-wizard', [
+            'steps' => self::STEPS,
+            'minDate' => now()->toDateString(),
+            'delivery' => \App\Models\CompanySetting::current()->delivery(),
+        ]);
     }
 }

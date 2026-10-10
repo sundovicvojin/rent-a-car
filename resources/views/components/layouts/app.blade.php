@@ -25,6 +25,7 @@
     <link rel="preload" href="/fonts/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
     @isset($jsonLd)<script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>@endisset
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if (! empty($map)) @vite(['resources/js/map.js']) @endif
     @if (! empty($livewire)) @livewireStyles @endif
 </head>
 <body>

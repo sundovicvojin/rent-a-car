@@ -19,9 +19,18 @@ use Illuminate\Support\Collection;
  */
 class PricingService
 {
-    /** @param  array<int,int>  $extraIds */
-    public function quote(Vehicle $vehicle, DateRange $range, ?Location $pickup = null, ?Location $return = null, array $extraIds = []): PriceQuote
+    public function __construct(private DeliveryService $delivery) {}
+
+    /**
+     * @param  array<int,int>  $extraIds
+     * @param  array{lat:float,lng:float,address?:?string}|null  $pickupPoint  tačka sa mape umesto lokacije
+     * @param  array{lat:float,lng:float,address?:?string}|null  $returnPoint
+     */
+    public function quote(Vehicle $vehicle, DateRange $range, ?Location $pickup = null, ?Location $return = null, array $extraIds = [], ?array $pickupPoint = null, ?array $returnPoint = null): PriceQuote
     {
+        $pickupCustom = $pickupPoint ? $this->customPoint($pickupPoint) : null;
+        $returnCustom = $returnPoint ? $this->customPoint($returnPoint) : null;
+
         $days = $range->days();
 
         [$rentalTotal, $lines] = $this->rental($vehicle, $range);
@@ -36,12 +45,25 @@ class PricingService
             rentalLines: $lines,
             discountPercent: $discountPercent,
             discountTotal: $discountTotal,
-            pickupFee: (int) ($pickup?->delivery_fee ?? 0),
-            returnFee: (int) ($return?->delivery_fee ?? 0),
+            pickupFee: $pickupCustom ? $pickupCustom['fee'] : (int) ($pickup?->delivery_fee ?? 0),
+            returnFee: $returnCustom ? $returnCustom['fee'] : (int) ($return?->delivery_fee ?? 0),
             extras: $extras,
             extrasTotal: (int) array_sum(array_column($extras, 'total')),
             deposit: $vehicle->deposit,
+            pickupCustom: $pickupCustom,
+            returnCustom: $returnCustom,
         );
+    }
+
+    /** @return array{lat:float,lng:float,address:?string,km:int,fee:int} */
+    private function customPoint(array $point): array
+    {
+        $d = $this->delivery->forPoint((float) $point['lat'], (float) $point['lng']);
+        if (! $d['within_range']) {
+            throw new \InvalidArgumentException('Izabrana tačka je van zone dostave.');
+        }
+
+        return ['lat' => (float) $point['lat'], 'lng' => (float) $point['lng'], 'address' => $point['address'] ?? null, 'km' => $d['km'], 'fee' => $d['fee']];
     }
 
     /** Cena jednog dana najma za vozilo (sezonsko pravilo ili osnovna cena). */

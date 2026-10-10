@@ -20,6 +20,9 @@ final class PriceQuote
         public readonly array $extras,
         public readonly int $extrasTotal,
         public readonly int $deposit,
+        /** @var array{lat:float,lng:float,address:?string,km:int,fee:int}|null */
+        public readonly ?array $pickupCustom = null,
+        public readonly ?array $returnCustom = null,
     ) {}
 
     public function deliveryTotal(): int
@@ -46,6 +49,8 @@ final class PriceQuote
             'extras' => $this->extras,
             'extras_total' => $this->extrasTotal,
             'deposit' => $this->deposit,
+            'pickup_custom' => $this->pickupCustom,
+            'return_custom' => $this->returnCustom,
             'total' => $this->total(),
         ];
     }

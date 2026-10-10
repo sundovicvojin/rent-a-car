@@ -12,8 +12,11 @@ return [
         'address' => 'Bulevar oslobođenja 1, 21000 Novi Sad',
         'working_hours' => "Pon–Pet 08:00–20:00\nSub 09:00–15:00\nNedelja: po dogovoru",
     ],
-    // Milestone 5: baza za obračun doplate po udaljenosti (Novi Sad)
-    'base_lat' => 45.2551,
-    'base_lng' => 19.8452,
-    'distance_fee_per_km' => 50, // u centima
+    // Dostava na adresu izabranu na mapi: podrazumevane vrednosti (menjaju se u podešavanjima firme)
+    'delivery' => [
+        'base_lat' => 45.2551,
+        'base_lng' => 19.8452,
+        'fee_per_km' => 50, // u centima, po započetom kilometru
+        'max_km' => 30,
+    ],
 ];

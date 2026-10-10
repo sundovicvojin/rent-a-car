@@ -61,7 +61,7 @@ class ReservationForm
                     TextInput::make('period')->label('Termin')->disabled()->dehydrated(false)
                         ->formatStateUsing(fn ($record) => $record ? $record->starts_on->format('d.m.Y').' – '.$record->ends_on->format('d.m.Y').' ('.$record->days.' d.)' : null),
                     TextInput::make('locations')->label('Lokacije')->disabled()->dehydrated(false)
-                        ->formatStateUsing(fn ($record) => $record ? $record->pickupLocation->name.' → '.$record->returnLocation->name : null),
+                        ->formatStateUsing(fn ($record) => $record ? $record->pickupLabel().' → '.$record->returnLabel() : null),
                     TextInput::make('total_label')->label('Ukupno')->disabled()->dehydrated(false)
                         ->formatStateUsing(fn ($record) => $record ? Money::format($record->total).' (depozit '.Money::format($record->deposit).')' : null),
                     Textarea::make('customer_note')->label('Napomena klijenta')->disabled()->dehydrated(false)->columnSpanFull()->rows(2),

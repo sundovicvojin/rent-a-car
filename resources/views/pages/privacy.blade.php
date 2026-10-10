@@ -16,7 +16,7 @@
             <h2>5. Prava lica na koje se podaci odnose</h2>
             <p>Imate pravo na pristup, ispravku, brisanje i prigovor, kao i na povlačenje saglasnosti. Zahtev možete poslati na {{ $company->email }}.</p>
             <h2>6. Kolačići i spoljne usluge</h2>
-            <p>Sajt ne koristi alate za praćenje niti reklamne skripte. Fontovi se serviraju sa našeg servera. Sesijski kolačić se koristi isključivo za rad forme.</p>
+            <p>Sajt ne koristi alate za praćenje niti reklamne skripte. Fontovi se serviraju sa našeg servera. Ako klijent izabere mesto na mapi tokom rezervacije, mapa učitava pločice sa OpenStreetMap servera (pri tome se deli IP adresa posetioca). Sesijski kolačić se koristi isključivo za rad forme.</p>
         </div>
     </div>
 </x-layouts.app>

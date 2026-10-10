@@ -16,6 +16,6 @@ class MoneyInput
             ->step(0.01)
             ->prefix(config('rentacar.currency_symbol'))
             ->formatStateUsing(fn ($state) => $state === null ? null : Money::toAmount((int) $state))
-            ->dehydrateStateUsing(fn ($state) => Money::toCents($state));
+            ->dehydrateStateUsing(fn ($state) => $state === null || $state === '' ? null : Money::toCents($state));
     }
 }

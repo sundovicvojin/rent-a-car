@@ -4,8 +4,8 @@
 <x-mail::panel>
 **Klijent:** {{ $reservation->customer->name }}, {{ $reservation->customer->phone }}, {{ $reservation->customer->email }}
 **Vozilo:** {{ $reservation->vehicle->name }} ({{ $reservation->vehicle->plate }})
-**Preuzimanje:** {{ $reservation->starts_on->format('d.m.Y') }}, {{ $reservation->pickupLocation->name }}
-**Vraćanje:** {{ $reservation->ends_on->format('d.m.Y') }}, {{ $reservation->returnLocation->name }}
+**Preuzimanje:** {{ $reservation->starts_on->format('d.m.Y') }}, {{ $reservation->pickupLabel() }}
+**Vraćanje:** {{ $reservation->ends_on->format('d.m.Y') }}, {{ $reservation->returnLabel() }}
 **Ukupno:** {{ \App\Support\Money::format($reservation->total) }} ({{ $reservation->days }} dana)
 @if ($reservation->customer_note)
 **Napomena:** {{ $reservation->customer_note }}

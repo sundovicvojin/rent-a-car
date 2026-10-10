@@ -10,8 +10,8 @@
             <dl class="mt-6 grid gap-5 text-sm sm:grid-cols-2">
                 <div><dt class="text-ink-2">Vozilo</dt><dd class="font-semibold">{{ $reservation->vehicle->name }}</dd></div>
                 <div><dt class="text-ink-2">Trajanje</dt><dd class="font-semibold"><span class="num">{{ $reservation->days }}</span> {{ $reservation->days === 1 ? 'dan' : 'dana' }}</dd></div>
-                <div><dt class="text-ink-2">Preuzimanje</dt><dd class="font-semibold"><span class="num">{{ $reservation->starts_on->format('d.m.Y') }}</span>, {{ $reservation->pickupLocation->name }}</dd></div>
-                <div><dt class="text-ink-2">Vraćanje</dt><dd class="font-semibold"><span class="num">{{ $reservation->ends_on->format('d.m.Y') }}</span>, {{ $reservation->returnLocation->name }}</dd></div>
+                <div><dt class="text-ink-2">Preuzimanje</dt><dd class="font-semibold"><span class="num">{{ $reservation->starts_on->format('d.m.Y') }}</span>, {{ $reservation->pickupLabel() }}</dd></div>
+                <div><dt class="text-ink-2">Vraćanje</dt><dd class="font-semibold"><span class="num">{{ $reservation->ends_on->format('d.m.Y') }}</span>, {{ $reservation->returnLabel() }}</dd></div>
                 @foreach ($reservation->extras as $extra)<div><dt class="text-ink-2">Dodatak</dt><dd class="font-semibold">{{ $extra->name }}</dd></div>@endforeach
             </dl>
             <div class="mt-6 flex items-baseline justify-between border-t border-line pt-4">

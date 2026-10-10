@@ -31,7 +31,7 @@ class CompanySettings extends Page
 
     public function mount(): void
     {
-        $this->form->fill(CompanySetting::current()->only(['name', 'phone', 'email', 'address', 'working_hours']));
+        $this->form->fill(CompanySetting::current()->only(['name', 'phone', 'email', 'address', 'working_hours', 'base_latitude', 'base_longitude', 'fee_per_km', 'max_delivery_km']));
     }
 
     public function form(Schema $schema): Schema
@@ -49,6 +49,15 @@ class CompanySettings extends Page
                         TextInput::make('address')->label('Adresa')->maxLength(200),
                         Textarea::make('working_hours')->label('Radno vreme')->rows(4)->columnSpanFull()
                             ->helperText('Svaki red se prikazuje u posebnom redu.'),
+                    ]),
+                Section::make('Dostava na adresu (mapa)')
+                    ->description('Kada klijent izabere tačku na mapi, doplata se računa po kilometru vazdušne linije od baze. Prazna polja koriste podrazumevane vrednosti.')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('base_latitude')->label('Baza: geografska širina')->numeric()->minValue(-90)->maxValue(90)->placeholder((string) config('rentacar.delivery.base_lat')),
+                        TextInput::make('base_longitude')->label('Baza: geografska dužina')->numeric()->minValue(-180)->maxValue(180)->placeholder((string) config('rentacar.delivery.base_lng')),
+                        \App\Filament\Support\MoneyInput::make('fee_per_km')->label('Doplata po kilometru')->placeholder(number_format(config('rentacar.delivery.fee_per_km') / 100, 2)),
+                        TextInput::make('max_delivery_km')->label('Najveća udaljenost dostave (km)')->numeric()->minValue(1)->maxValue(500)->placeholder((string) config('rentacar.delivery.max_km')),
                     ]),
             ]);
     }

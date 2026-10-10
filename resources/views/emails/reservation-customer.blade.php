@@ -5,8 +5,8 @@ Vaša rezervacija **{{ $reservation->number }}** je primljena i čeka potvrdu. J
 
 <x-mail::panel>
 **Vozilo:** {{ $reservation->vehicle->name }}
-**Preuzimanje:** {{ $reservation->starts_on->format('d.m.Y') }}, {{ $reservation->pickupLocation->name }}
-**Vraćanje:** {{ $reservation->ends_on->format('d.m.Y') }}, {{ $reservation->returnLocation->name }}
+**Preuzimanje:** {{ $reservation->starts_on->format('d.m.Y') }}, {{ $reservation->pickupLabel() }}
+**Vraćanje:** {{ $reservation->ends_on->format('d.m.Y') }}, {{ $reservation->returnLabel() }}
 **Broj dana:** {{ $reservation->days }}
 @foreach ($reservation->extras as $extra)
 **Dodatak:** {{ $extra->name }}

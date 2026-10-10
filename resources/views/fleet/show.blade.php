@@ -51,7 +51,7 @@
 
             <div class="card mt-6 p-5">
                 <h2 class="text-lg font-bold">Proverite termin</h2>
-                <form action="{{ route('fleet.show', $vehicle) }}" method="get" class="mt-4 grid grid-cols-2 gap-3" novalidate>
+                <form action="{{ route('fleet.show', $vehicle) }}" method="get" class="mt-4 grid gap-3 min-[420px]:grid-cols-2" novalidate>
                     <div class="field">
                         <label class="label" for="d-od">Preuzimanje</label>
                         <input class="input num" type="date" id="d-od" name="od" min="{{ now()->toDateString() }}" value="{{ $query['od'] ?? '' }}" required>
@@ -61,7 +61,7 @@
                         <input class="input num" type="date" id="d-do" name="do" min="{{ now()->toDateString() }}" value="{{ $query['do'] ?? '' }}" required>
                     </div>
                     @foreach (['lokacija', 'vracanje'] as $k)@if (! empty($query[$k]))<input type="hidden" name="{{ $k }}" value="{{ $query[$k] }}">@endif @endforeach
-                    <button class="btn btn-ghost col-span-2" type="submit">Izračunaj cenu</button>
+                    <button class="btn btn-ghost min-[420px]:col-span-2" type="submit">Izračunaj cenu</button>
                 </form>
 
                 @if ($range)

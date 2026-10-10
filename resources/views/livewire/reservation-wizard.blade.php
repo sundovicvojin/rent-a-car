@@ -64,7 +64,7 @@
                         <ul class="grid gap-4">
                             @foreach ($this->vehicles as $v)
                                 <li>
-                                    <label class="flex cursor-pointer gap-4 border-2 p-3 transition-colors has-[:checked]:border-brand-text has-[:checked]:bg-brand-soft has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2" style="border-radius: 8px; border-color: var(--line); outline-color: var(--brand-text);">
+                                    <label class="flex cursor-pointer gap-4 border-2 p-3 transition-colors has-[:checked]:border-brand-text has-[:checked]:bg-brand-soft has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2" style="border-radius: 8px; border-color: var(--field); outline-color: var(--brand-text);">
                                         <input type="radio" class="sr-only" name="vehicle" value="{{ $v->id }}" wire:click="selectVehicle({{ $v->id }})" @checked($vehicle_id === $v->id)>
                                         <div class="aspect-[16/10] w-28 shrink-0 overflow-hidden bg-surface-2 sm:w-40" style="border-radius: 4px;"><x-vehicle-image :image="$v->primaryImage" sizes="160px" /></div>
                                         <div class="flex min-w-0 flex-1 flex-col justify-between">

@@ -1,3 +1,24 @@
+import Lenis from 'lenis';
+
+// Glatko skrolovanje (inercija) samo za miš/touchpad. Na dodir i uz "smanjeno kretanje" ostaje nativno skrolovanje.
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+if (!reducedMotion && finePointer) {
+    const lenis = new Lenis({
+        lerp: 0.1,
+        wheelMultiplier: 1,
+        anchors: true, // linkovi ka #sidrima (npr. "Preskoči na sadržaj") klize do cilja
+    });
+    window.lenis = lenis;
+
+    const raf = (time) => {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+}
+
 // Mobilni meni: bez biblioteka, radi i bez JavaScript-a kao običan niz linkova.
 const toggle = document.querySelector('[data-nav-toggle]');
 const menu = document.querySelector('[data-nav-menu]');

@@ -44,7 +44,7 @@
             </div>
             <div class="field">
                 <label class="label" for="c-message">Poruka <span class="req" aria-hidden="true">*</span></label>
-                <textarea class="textarea" id="c-message" name="message" rows="5" required @error('message') aria-invalid="true" aria-describedby="c-message-err" @enderror>{{ old('message') }}</textarea>
+                <textarea data-lenis-prevent class="textarea" id="c-message" name="message" rows="5" required @error('message') aria-invalid="true" aria-describedby="c-message-err" @enderror>{{ old('message') }}</textarea>
                 @error('message')<p class="error" id="c-message-err">{{ $message }}</p>@enderror
             </div>
             <div class="field">

@@ -164,6 +164,12 @@
     [hidden] { display: none !important; }
 }
 
+/* Lenis preuzima glatko skrolovanje; nativno se gasi da se dva efekta ne bi sudarala. */
+html.lenis, html.lenis body { height: auto; }
+html.lenis:not(.lenis-autoToggle) { scroll-behavior: auto; }
+.lenis.lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {

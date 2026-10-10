@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reservation;
+
 class ReservationController extends Controller
 {
     public function create()
     {
-        return view('pages.privacy');
+        return view('reservation.create');
     }
 
-    public function confirmation()
+    public function confirmation(Reservation $reservation)
     {
-        abort(404);
+        $reservation->load(['customer', 'vehicle.primaryImage', 'pickupLocation', 'returnLocation', 'extras']);
+
+        return view('reservation.confirmation', ['reservation' => $reservation]);
     }
 }

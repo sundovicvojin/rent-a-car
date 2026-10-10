@@ -95,12 +95,17 @@ class DemoSeeder extends Seeder
 
             if ($vehicle->images()->doesntExist()) {
                 foreach (range(0, 2) as $i) {
-                    $path = PlaceholderImage::make("vehicles/{$vehicle->slug}-{$i}.jpg", $color, $body, $i);
-                    $images->generateVariants($path);
-                    VehicleImage::create([
+                    $path = "vehicles/{$vehicle->slug}-{$i}.jpg";
+                    if (! app()->environment('testing')) { // u testovima preskačemo generisanje fajlova
+                        PlaceholderImage::make($path, $color, $body, $i);
+                    }
+                    VehicleImage::withoutEvents(fn () => VehicleImage::create([
                         'vehicle_id' => $vehicle->id, 'path' => $path, 'is_placeholder' => true,
                         'alt' => "{$name} – privremena ilustracija ".($i + 1), 'is_primary' => $i === 0, 'sort_order' => $i,
-                    ]);
+                    ]));
+                    if (! app()->environment('testing')) {
+                        $images->generateVariants($path);
+                    }
                 }
             }
         }

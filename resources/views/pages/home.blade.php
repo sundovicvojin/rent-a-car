@@ -1,4 +1,4 @@
-<x-layouts.app :title="null" description="Iznajmljivanje vozila u Novom Sadu sa jasnom cenom po danu. Izaberite termin, lokaciju i vozilo, a rezervaciju potvrđujemo mejlom. Plaćanje pri preuzimanju.">
+<x-layouts.app description="Iznajmljivanje vozila u Novom Sadu sa jasnom cenom po danu. Izaberite termin, lokaciju i vozilo, a rezervaciju potvrđujemo mejlom. Plaćanje pri preuzimanju.">
     {{-- Hero --}}
     <section class="relative overflow-hidden">
         <div class="wrap grid items-center gap-10 pb-10 pt-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:pb-16 lg:pt-16">

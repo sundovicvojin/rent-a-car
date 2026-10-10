@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('vehicle_blocks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
+            $table->date('starts_on');
+            $table->date('ends_on'); // iskljucivo
+            $table->string('reason')->nullable();
+            $table->timestamps();
+            $table->index(['vehicle_id', 'starts_on', 'ends_on']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('vehicle_blocks');
+    }
+};
